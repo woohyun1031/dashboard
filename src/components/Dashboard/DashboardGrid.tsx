@@ -1,5 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Activity, BarChart2, LayoutList } from 'lucide-react';
+import {
+    LayoutGrid,
+    Server,
+    Activity,
+    Map,
+    Key,
+    Monitor,
+    Users,
+    FileText,
+    User,
+    ChevronLeft,
+    ChevronRight,
+} from 'lucide-react';
 import type { DashboardItem, InteractionState, ItemType } from '../../types/grid';
 import { GRID_CONFIG } from '../../constants/grid';
 import {
@@ -11,10 +23,24 @@ import {
 import { GridItem } from './GridItem';
 
 const INITIAL_ITEMS: DashboardItem[] = [
-    { id: '1', type: 'metric', title: 'Total Revenue', x: 0, y: 0, w: 3, h: 1, minW: 2, minH: 1 },
-    { id: '2', type: 'metric', title: 'Active Users', x: 3, y: 0, w: 3, h: 1, minW: 2, minH: 1 },
-    { id: '3', type: 'chart', title: 'Sales Trend', x: 0, y: 1, w: 6, h: 2, minW: 4, minH: 2 },
-    { id: '4', type: 'table', title: 'Recent Orders', x: 6, y: 0, w: 6, h: 3, minW: 4, minH: 2 },
+    { id: '1', type: 'metric', title: 'Goals', x: 0, y: 0, w: 3, h: 2, minW: 2, minH: 1 },
+    { id: '2', type: 'metric', title: 'Habits', x: 3, y: 0, w: 3, h: 2, minW: 2, minH: 1 },
+    { id: '3', type: 'chart', title: 'Focus', x: 6, y: 0, w: 3, h: 2, minW: 2, minH: 2 },
+    { id: '4', type: 'chart', title: 'Energy', x: 9, y: 0, w: 3, h: 2, minW: 2, minH: 2 },
+    {
+        id: '5',
+        type: 'table',
+        title: 'Task : Meditate',
+        x: 0,
+        y: 2,
+        w: 3,
+        h: 2,
+        minW: 2,
+        minH: 2,
+    },
+    { id: '6', type: 'table', title: 'Task : Read 1hr', x: 3, y: 2, w: 3, h: 2, minW: 2, minH: 2 },
+    { id: '7', type: 'table', title: 'Task : Workout', x: 6, y: 2, w: 3, h: 2, minW: 2, minH: 2 },
+    { id: '8', type: 'table', title: 'Task : Journal', x: 9, y: 2, w: 3, h: 2, minW: 2, minH: 2 },
 ];
 
 export const DashboardGrid = () => {
@@ -23,15 +49,16 @@ export const DashboardGrid = () => {
 
     const [interaction, setInteraction] = useState<InteractionState | null>(null);
     const [previewLayout, setPreviewLayout] = useState<DashboardItem[] | null>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const handleAddItem = (type: ItemType) => {
         const configs: Record<
             ItemType,
             Pick<DashboardItem, 'w' | 'h' | 'minW' | 'minH' | 'title'>
         > = {
-            metric: { w: 3, h: 1, minW: 2, minH: 1, title: 'New Metric' },
-            chart: { w: 6, h: 2, minW: 4, minH: 2, title: 'New Chart' },
-            table: { w: 6, h: 2, minW: 4, minH: 2, title: 'New Table' },
+            metric: { w: 3, h: 2, minW: 2, minH: 1, title: 'New Metric' },
+            chart: { w: 3, h: 2, minW: 2, minH: 2, title: 'New Chart' },
+            table: { w: 3, h: 2, minW: 2, minH: 2, title: 'New Event' },
         };
         const config = configs[type];
 
@@ -80,8 +107,16 @@ export const DashboardGrid = () => {
             initialItems: items.map((i) => ({ ...i })),
         });
         setPreviewLayout(null);
-        document.body.style.userSelect = 'none';
     };
+
+    useEffect(() => {
+        if (interaction) {
+            document.body.style.userSelect = 'none';
+            return () => {
+                document.body.style.userSelect = '';
+            };
+        }
+    }, [interaction]);
 
     useEffect(() => {
         if (!interaction || !gridRef.current) return;
@@ -187,7 +222,6 @@ export const DashboardGrid = () => {
 
             setInteraction(null);
             setPreviewLayout(null);
-            document.body.style.userSelect = '';
         };
 
         window.addEventListener('pointermove', handlePointerMove);
@@ -202,84 +236,189 @@ export const DashboardGrid = () => {
     const displayItems = previewLayout || items;
 
     return (
-        <div className="min-h-screen bg-slate-50 p-8 font-sans">
-            <div className="max-w-7xl mx-auto mb-8 flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Responsive Dashboard Grid</h1>
-                    <p className="text-slate-500 text-sm mt-1">
-                        리사이즈 시 주변 패널 실시간 압축(Squeeze) 반응형 레이아웃 엔진
-                    </p>
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => handleAddItem('metric')}
-                        className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-md shadow-sm hover:bg-slate-50 text-sm font-medium text-slate-700 transition-colors"
-                    >
-                        <Activity size={16} /> + Metric
-                    </button>
-                    <button
-                        onClick={() => handleAddItem('chart')}
-                        className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-md shadow-sm hover:bg-slate-50 text-sm font-medium text-slate-700 transition-colors"
-                    >
-                        <BarChart2 size={16} /> + Chart
-                    </button>
-                    <button
-                        onClick={() => handleAddItem('table')}
-                        className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-md shadow-sm hover:bg-slate-50 text-sm font-medium text-slate-700 transition-colors"
-                    >
-                        <LayoutList size={16} /> + Table
-                    </button>
-                </div>
-            </div>
-
-            <div
-                ref={gridRef}
-                className="max-w-7xl mx-auto relative select-none"
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: `repeat(${GRID_CONFIG.COLUMNS}, minmax(0, 1fr))`,
-                    gridAutoRows: `${GRID_CONFIG.ROW_HEIGHT}px`,
-                    gap: `${GRID_CONFIG.GAP}px`,
-                }}
+        <div className="flex h-screen w-full bg-[#000000] text-white font-sans overflow-hidden">
+            {/* Sidebar Navigation */}
+            <nav
+                className={`flex-shrink-0 border-r border-[#222] flex flex-col justify-between py-6 bg-[#050505] transition-[width] duration-200 ${isSidebarOpen ? 'w-64 px-4' : 'w-16 px-2 items-center'}`}
             >
-                {displayItems.map((item) => (
-                    <GridItem
-                        key={item.id}
-                        item={item}
-                        isInteracting={interaction?.id === item.id}
-                        onPointerDown={(e, type) => handlePointerDown(e, item, type)}
-                        onToggleRowSpan={() => toggleRowSpan(item.id)}
-                        onRemove={() => handleRemoveItem(item.id)}
-                    />
-                ))}
-            </div>
+                <div className="flex flex-col gap-8 w-full">
+                    {/* Header Logo */}
+                    <div
+                        className={`flex items-center gap-3 ${isSidebarOpen ? 'px-2' : 'justify-center'} mb-2`}
+                    >
+                        <div className="w-8 h-4 bg-white/10 rounded-sm overflow-hidden flex shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)] shrink-0">
+                            <div className="w-6 h-full bg-white relative"></div>
+                        </div>
+                        {isSidebarOpen && (
+                            <div className="flex flex-col">
+                                <span className="text-sm font-semibold leadning-tight">You</span>
+                                <span className="text-xs text-[#888]">@growth</span>
+                            </div>
+                        )}
+                    </div>
 
-            <div className="max-w-7xl mx-auto mt-8 p-4 bg-indigo-50 border border-indigo-100 rounded-lg text-sm text-indigo-800 flex items-start gap-3">
-                <Activity className="shrink-0 mt-0.5" size={16} />
-                <div>
-                    <p className="font-semibold mb-1">
-                        반응형 리사이즈 및 드래그 엔진 업데이트 내용
-                    </p>
-                    <ul className="list-disc pl-4 space-y-1 text-indigo-700/80">
-                        <li>
-                            <b>[New!]</b> 패널을 드래그하여{' '}
-                            <b>
-                                다른 패널 위에 겹쳐 놓으면, 기존 패널들을 우측으로
-                                밀어냅니다(Reflow)
-                            </b>
-                            . 공간이 부족하면 자동으로 다음 줄의 좌측으로 내려갑니다!
-                        </li>
-                        <li>
-                            패널을 드래그할 때,{' '}
-                            <b>빈 틈새를 겨냥하면 공간에 맞춰 자동으로 크기가 축소(Auto-shrink)</b>
-                            되어 쏙 들어갑니다. 큰 영역으로 나오면 원래 크기로 복구됩니다.
-                        </li>
-                        <li>
-                            패널의 크기를 키울 때, <b>다른 패널을 밀어내며(Squeeze)</b> 크기를
-                            양보받습니다. 최소 크기에 다다르면 화면 밖으로 밀어냅니다.
-                        </li>
-                    </ul>
+                    {/* Nav Sections */}
+                    <div className="flex flex-col gap-6 text-sm">
+                        <div className="flex flex-col gap-2">
+                            {isSidebarOpen && (
+                                <span className="text-xs font-semibold text-[#666] px-2 mb-1">
+                                    Dashboard
+                                </span>
+                            )}
+                            <a
+                                href="#"
+                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md bg-[#222] text-white font-medium`}
+                            >
+                                <LayoutGrid size={16} className="text-[#888] shrink-0" />{' '}
+                                {isSidebarOpen && <span>Controls</span>}
+                            </a>
+                            <a
+                                href="#"
+                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
+                            >
+                                <Server size={16} className="shrink-0" />{' '}
+                                {isSidebarOpen && <span>Dashboard</span>}
+                            </a>
+                            <a
+                                href="#"
+                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
+                            >
+                                <Activity size={16} className="shrink-0" />{' '}
+                                {isSidebarOpen && <span>Flow</span>}
+                            </a>
+                            <a
+                                href="#"
+                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
+                            >
+                                <Map size={16} className="shrink-0" />{' '}
+                                {isSidebarOpen && <span>Map</span>}
+                            </a>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            {isSidebarOpen && (
+                                <span className="text-xs font-semibold text-[#666] px-2 mb-1">
+                                    Productivity
+                                </span>
+                            )}
+                            <a
+                                href="#"
+                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
+                            >
+                                <Key size={16} className="shrink-0" />{' '}
+                                {isSidebarOpen && <span>Deep Work</span>}
+                            </a>
+                            <a
+                                href="#"
+                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
+                            >
+                                <Monitor size={16} className="shrink-0" />{' '}
+                                {isSidebarOpen && <span>Projects</span>}
+                            </a>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            {isSidebarOpen && (
+                                <span className="text-xs font-semibold text-[#666] px-2 mb-1">
+                                    Mindset
+                                </span>
+                            )}
+                            <a
+                                href="#"
+                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
+                            >
+                                <Users size={16} className="shrink-0" />{' '}
+                                {isSidebarOpen && <span>Community</span>}
+                            </a>
+                            <a
+                                href="#"
+                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
+                            >
+                                <FileText size={16} className="shrink-0" />{' '}
+                                {isSidebarOpen && <span>Journal</span>}
+                            </a>
+                        </div>
+                    </div>
                 </div>
+
+                {/* Profile */}
+                <div
+                    className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} pt-4 mt-8`}
+                >
+                    <div className="w-8 h-8 rounded-full bg-[#222] border border-[#333] flex items-center justify-center text-[#888] shrink-0">
+                        <User size={16} />
+                    </div>
+                    {isSidebarOpen && (
+                        <div className="flex flex-col truncate">
+                            <span className="text-sm font-semibold">admin</span>
+                            <span className="text-xs text-[#888]">none</span>
+                        </div>
+                    )}
+                </div>
+            </nav>
+
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col h-full bg-[#0a0a0a] min-w-0">
+                {/* Top Header */}
+                <header className="h-14 border-b border-[#222] flex items-center px-4 text-sm font-medium gap-2 shrink-0">
+                    <button
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="p-1.5 mr-2 text-[#888] hover:text-white hover:bg-[#111] rounded-md transition-colors"
+                        title={isSidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
+                    >
+                        {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+                    </button>
+                    <span className="text-white/40 flex gap-2 items-center">
+                        <LayoutGrid size={14} /> /
+                    </span>
+                    <span className="text-white">Dashboard</span>
+
+                    <div className="ml-auto flex gap-2">
+                        <button
+                            onClick={() => handleAddItem('metric')}
+                            className="px-3 py-1.5 text-xs bg-[#111] text-[#888] hover:text-white border border-[#333] hover:border-[#555] rounded-md transition-colors"
+                        >
+                            + Metric
+                        </button>
+                    </div>
+                </header>
+
+                {/* Grid Container */}
+                <div className="flex-1 overflow-auto p-12">
+                    <div className="max-w-[1200px] mx-auto w-full h-full relative">
+                        <div
+                            ref={gridRef}
+                            className="relative select-none w-full"
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: `repeat(${GRID_CONFIG.COLUMNS}, minmax(0, 1fr))`,
+                                gridAutoRows: `${GRID_CONFIG.ROW_HEIGHT}px`,
+                                gap: `${GRID_CONFIG.GAP}px`,
+                                paddingBottom: '100px', // Extra padding for drag space
+                            }}
+                        >
+                            {displayItems.map((item) => (
+                                <GridItem
+                                    key={item.id}
+                                    item={item}
+                                    isInteracting={interaction?.id === item.id}
+                                    previewState={
+                                        interaction?.id === item.id && previewLayout
+                                            ? { type: interaction.type }
+                                            : null
+                                    }
+                                    onPointerDown={(e, type) => handlePointerDown(e, item, type)}
+                                    onToggleRowSpan={() => toggleRowSpan(item.id)}
+                                    onRemove={() => handleRemoveItem(item.id)}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Status Bar */}
+                <footer className="h-8 border-t border-[#222] bg-[#050505] flex items-center px-4 text-[10px] text-[#666]">
+                    <span>Dashboard 0.1</span>
+                    <span className="ml-2">0ms</span>
+                </footer>
             </div>
         </div>
     );
