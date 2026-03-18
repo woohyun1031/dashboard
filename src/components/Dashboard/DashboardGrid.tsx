@@ -1,17 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-    LayoutGrid,
-    Server,
-    Activity,
-    Map,
-    Key,
-    Monitor,
-    Users,
-    FileText,
-    User,
-    ChevronLeft,
-    ChevronRight,
-} from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import { LayoutGrid, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { DashboardItem, InteractionState, ItemType } from '../../types/grid';
 import { GRID_CONFIG } from '../../constants/grid';
 import {
@@ -59,7 +48,10 @@ export const DashboardGrid = () => {
 
     const [interaction, setInteraction] = useState<InteractionState | null>(null);
     const [previewLayout, setPreviewLayout] = useState<DashboardItem[] | null>(null);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const { isSidebarOpen, setIsSidebarOpen } = useOutletContext<{
+        isSidebarOpen: boolean;
+        setIsSidebarOpen: (val: boolean) => void;
+    }>();
 
     const handleAddItem = (type: ItemType) => {
         const configs: Record<
@@ -246,190 +238,69 @@ export const DashboardGrid = () => {
     const displayItems = previewLayout || items;
 
     return (
-        <div className="flex h-screen w-full bg-[#000000] text-white font-sans overflow-hidden">
-            {/* Sidebar Navigation */}
-            <nav
-                className={`flex-shrink-0 border-r border-[#222] flex flex-col justify-between py-6 bg-[#050505] transition-[width] duration-200 ${isSidebarOpen ? 'w-64 px-4' : 'w-16 px-2 items-center'}`}
-            >
-                <div className="flex flex-col gap-8 w-full">
-                    {/* Header Logo */}
-                    <div
-                        className={`flex items-center gap-3 ${isSidebarOpen ? 'px-2' : 'justify-center'} mb-2`}
-                    >
-                        <div className="w-8 h-4 bg-white/10 rounded-sm overflow-hidden flex shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)] shrink-0">
-                            <div className="w-6 h-full bg-white relative"></div>
-                        </div>
-                        {isSidebarOpen && (
-                            <div className="flex flex-col">
-                                <span className="text-sm font-semibold leadning-tight">You</span>
-                                <span className="text-xs text-[#888]">@growth</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Nav Sections */}
-                    <div className="flex flex-col gap-6 text-sm">
-                        <div className="flex flex-col gap-2">
-                            {isSidebarOpen && (
-                                <span className="text-xs font-semibold text-[#666] px-2 mb-1">
-                                    Dashboard
-                                </span>
-                            )}
-                            <a
-                                href="#"
-                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md bg-[#222] text-white font-medium`}
-                            >
-                                <LayoutGrid size={16} className="text-[#888] shrink-0" />{' '}
-                                {isSidebarOpen && <span>Controls</span>}
-                            </a>
-                            <a
-                                href="#"
-                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
-                            >
-                                <Server size={16} className="shrink-0" />{' '}
-                                {isSidebarOpen && <span>Dashboard</span>}
-                            </a>
-                            <a
-                                href="#"
-                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
-                            >
-                                <Activity size={16} className="shrink-0" />{' '}
-                                {isSidebarOpen && <span>Flow</span>}
-                            </a>
-                            <a
-                                href="#"
-                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
-                            >
-                                <Map size={16} className="shrink-0" />{' '}
-                                {isSidebarOpen && <span>Map</span>}
-                            </a>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            {isSidebarOpen && (
-                                <span className="text-xs font-semibold text-[#666] px-2 mb-1">
-                                    Productivity
-                                </span>
-                            )}
-                            <a
-                                href="#"
-                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
-                            >
-                                <Key size={16} className="shrink-0" />{' '}
-                                {isSidebarOpen && <span>Deep Work</span>}
-                            </a>
-                            <a
-                                href="#"
-                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
-                            >
-                                <Monitor size={16} className="shrink-0" />{' '}
-                                {isSidebarOpen && <span>Projects</span>}
-                            </a>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            {isSidebarOpen && (
-                                <span className="text-xs font-semibold text-[#666] px-2 mb-1">
-                                    Mindset
-                                </span>
-                            )}
-                            <a
-                                href="#"
-                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
-                            >
-                                <Users size={16} className="shrink-0" />{' '}
-                                {isSidebarOpen && <span>Community</span>}
-                            </a>
-                            <a
-                                href="#"
-                                className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} py-1.5 rounded-md text-[#888] hover:text-white hover:bg-[#111] transition-colors`}
-                            >
-                                <FileText size={16} className="shrink-0" />{' '}
-                                {isSidebarOpen && <span>Journal</span>}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Profile */}
-                <div
-                    className={`flex items-center ${isSidebarOpen ? 'gap-3 px-2' : 'justify-center'} pt-4 mt-8`}
+        <>
+            {/* Top Header */}
+            <header className="h-14 border-b border-[#222] flex items-center px-4 text-sm font-medium gap-2 shrink-0">
+                <button
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="p-1.5 mr-2 text-[#888] hover:text-white hover:bg-[#111] rounded-md transition-colors"
+                    title={isSidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
                 >
-                    <div className="w-8 h-8 rounded-full bg-[#222] border border-[#333] flex items-center justify-center text-[#888] shrink-0">
-                        <User size={16} />
-                    </div>
-                    {isSidebarOpen && (
-                        <div className="flex flex-col truncate">
-                            <span className="text-sm font-semibold">admin</span>
-                            <span className="text-xs text-[#888]">none</span>
-                        </div>
-                    )}
-                </div>
-            </nav>
+                    {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+                </button>
+                <span className="text-white/40 flex gap-2 items-center">
+                    <LayoutGrid size={14} /> /
+                </span>
+                <span className="text-white">Dashboard</span>
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col h-full bg-[#0a0a0a] min-w-0">
-                {/* Top Header */}
-                <header className="h-14 border-b border-[#222] flex items-center px-4 text-sm font-medium gap-2 shrink-0">
+                <div className="ml-auto flex gap-2">
                     <button
-                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-1.5 mr-2 text-[#888] hover:text-white hover:bg-[#111] rounded-md transition-colors"
-                        title={isSidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
+                        onClick={() => handleAddItem('metric')}
+                        className="px-3 py-1.5 text-xs bg-[#111] text-[#888] hover:text-white border border-[#333] hover:border-[#555] rounded-md transition-colors"
                     >
-                        {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+                        + Metric
                     </button>
-                    <span className="text-white/40 flex gap-2 items-center">
-                        <LayoutGrid size={14} /> /
-                    </span>
-                    <span className="text-white">Dashboard</span>
+                </div>
+            </header>
 
-                    <div className="ml-auto flex gap-2">
-                        <button
-                            onClick={() => handleAddItem('metric')}
-                            className="px-3 py-1.5 text-xs bg-[#111] text-[#888] hover:text-white border border-[#333] hover:border-[#555] rounded-md transition-colors"
-                        >
-                            + Metric
-                        </button>
-                    </div>
-                </header>
-
-                {/* Grid Container */}
-                <div className="flex-1 overflow-auto p-12">
-                    <div className="max-w-[1200px] mx-auto w-full h-full relative">
-                        <div
-                            ref={gridRef}
-                            className="relative select-none w-full"
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: `repeat(${GRID_CONFIG.COLUMNS}, minmax(0, 1fr))`,
-                                gridAutoRows: `${GRID_CONFIG.ROW_HEIGHT}px`,
-                                gap: `${GRID_CONFIG.GAP}px`,
-                                paddingBottom: '100px', // Extra padding for drag space
-                            }}
-                        >
-                            {displayItems.map((item) => (
-                                <GridItem
-                                    key={item.id}
-                                    item={item}
-                                    isInteracting={interaction?.id === item.id}
-                                    previewState={
-                                        interaction?.id === item.id && previewLayout
-                                            ? { type: interaction.type }
-                                            : null
-                                    }
-                                    onPointerDown={(e, type) => handlePointerDown(e, item, type)}
-                                    onToggleRowSpan={() => toggleRowSpan(item.id)}
-                                    onRemove={() => handleRemoveItem(item.id)}
-                                />
-                            ))}
-                        </div>
+            {/* Grid Container */}
+            <div className="flex-1 overflow-auto p-12">
+                <div className="max-w-[1200px] mx-auto w-full h-full relative">
+                    <div
+                        ref={gridRef}
+                        className="relative select-none w-full"
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: `repeat(${GRID_CONFIG.COLUMNS}, minmax(0, 1fr))`,
+                            gridAutoRows: `${GRID_CONFIG.ROW_HEIGHT}px`,
+                            gap: `${GRID_CONFIG.GAP}px`,
+                            paddingBottom: '100px', // Extra padding for drag space
+                        }}
+                    >
+                        {displayItems.map((item) => (
+                            <GridItem
+                                key={item.id}
+                                item={item}
+                                isInteracting={interaction?.id === item.id}
+                                previewState={
+                                    interaction?.id === item.id && previewLayout
+                                        ? { type: interaction.type }
+                                        : null
+                                }
+                                onPointerDown={(e, type) => handlePointerDown(e, item, type)}
+                                onToggleRowSpan={() => toggleRowSpan(item.id)}
+                                onRemove={() => handleRemoveItem(item.id)}
+                            />
+                        ))}
                     </div>
                 </div>
-
-                {/* Bottom Status Bar */}
-                <footer className="h-8 border-t border-[#222] bg-[#050505] flex items-center px-4 text-[10px] text-[#666]">
-                    <span>Dashboard 0.1</span>
-                    <span className="ml-2">0ms</span>
-                </footer>
             </div>
-        </div>
+
+            {/* Bottom Status Bar */}
+            <footer className="h-8 border-t border-[#222] bg-[#050505] flex items-center px-4 text-[10px] text-[#666]">
+                <span>Dashboard 0.1</span>
+                <span className="ml-2">0ms</span>
+            </footer>
+        </>
     );
 };
