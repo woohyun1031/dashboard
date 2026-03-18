@@ -23,24 +23,34 @@ import {
 import { GridItem } from './GridItem';
 
 const INITIAL_ITEMS: DashboardItem[] = [
-    { id: '1', type: 'metric', title: 'Goals', x: 0, y: 0, w: 3, h: 2, minW: 2, minH: 1 },
-    { id: '2', type: 'metric', title: 'Habits', x: 3, y: 0, w: 3, h: 2, minW: 2, minH: 1 },
-    { id: '3', type: 'chart', title: 'Focus', x: 6, y: 0, w: 3, h: 2, minW: 2, minH: 2 },
-    { id: '4', type: 'chart', title: 'Energy', x: 9, y: 0, w: 3, h: 2, minW: 2, minH: 2 },
+    { id: '1', type: 'metric', title: 'Goals', x: 0, y: 0, w: 12, h: 8, minW: 8, minH: 4 },
+    { id: '2', type: 'metric', title: 'Habits', x: 12, y: 0, w: 12, h: 8, minW: 8, minH: 4 },
+    { id: '3', type: 'chart', title: 'Focus', x: 24, y: 0, w: 12, h: 8, minW: 8, minH: 8 },
+    { id: '4', type: 'chart', title: 'Energy', x: 36, y: 0, w: 12, h: 8, minW: 8, minH: 8 },
     {
         id: '5',
         type: 'table',
         title: 'Task : Meditate',
         x: 0,
-        y: 2,
-        w: 3,
-        h: 2,
-        minW: 2,
-        minH: 2,
+        y: 8,
+        w: 12,
+        h: 8,
+        minW: 8,
+        minH: 8,
     },
-    { id: '6', type: 'table', title: 'Task : Read 1hr', x: 3, y: 2, w: 3, h: 2, minW: 2, minH: 2 },
-    { id: '7', type: 'table', title: 'Task : Workout', x: 6, y: 2, w: 3, h: 2, minW: 2, minH: 2 },
-    { id: '8', type: 'table', title: 'Task : Journal', x: 9, y: 2, w: 3, h: 2, minW: 2, minH: 2 },
+    {
+        id: '6',
+        type: 'table',
+        title: 'Task : Read 1hr',
+        x: 12,
+        y: 8,
+        w: 12,
+        h: 8,
+        minW: 8,
+        minH: 8,
+    },
+    { id: '7', type: 'table', title: 'Task : Workout', x: 24, y: 8, w: 12, h: 8, minW: 8, minH: 8 },
+    { id: '8', type: 'table', title: 'Task : Journal', x: 36, y: 8, w: 12, h: 8, minW: 8, minH: 8 },
 ];
 
 export const DashboardGrid = () => {
@@ -56,9 +66,9 @@ export const DashboardGrid = () => {
             ItemType,
             Pick<DashboardItem, 'w' | 'h' | 'minW' | 'minH' | 'title'>
         > = {
-            metric: { w: 3, h: 2, minW: 2, minH: 1, title: 'New Metric' },
-            chart: { w: 3, h: 2, minW: 2, minH: 2, title: 'New Chart' },
-            table: { w: 3, h: 2, minW: 2, minH: 2, title: 'New Event' },
+            metric: { w: 12, h: 8, minW: 8, minH: 4, title: 'New Metric' },
+            chart: { w: 12, h: 8, minW: 8, minH: 8, title: 'New Chart' },
+            table: { w: 12, h: 8, minW: 8, minH: 8, title: 'New Event' },
         };
         const config = configs[type];
 
@@ -81,8 +91,8 @@ export const DashboardGrid = () => {
             const target = prev.find((i) => i.id === id);
             if (!target) return prev;
 
-            const minH = target.minH || 1;
-            const nextH = target.h > minH ? minH : minH + 1;
+            const minH = target.minH || 4;
+            const nextH = target.h > minH ? minH : minH + 4;
             const proposed = { ...target, h: Math.min(nextH, GRID_CONFIG.MAX_ROW_SPAN) };
 
             const squeezed = calculateSqueezedLayout(prev, id, proposed);
@@ -140,7 +150,7 @@ export const DashboardGrid = () => {
                     0,
                     Math.min(
                         initialItem.x + deltaCols,
-                        GRID_CONFIG.COLUMNS - (initialItem.minW || 1)
+                        GRID_CONFIG.COLUMNS - (initialItem.minW || 4)
                     )
                 );
                 const newY = Math.max(0, initialItem.y + deltaRows);
@@ -171,8 +181,8 @@ export const DashboardGrid = () => {
                         newY,
                         initialItem.w,
                         initialItem.h,
-                        initialItem.minW || 1,
-                        initialItem.minH || 1,
+                        initialItem.minW || 4,
+                        initialItem.minH || 4,
                         interaction.id
                     );
 
@@ -201,11 +211,11 @@ export const DashboardGrid = () => {
                 }
             } else if (interaction.type === 'resize') {
                 const newW = Math.max(
-                    initialItem.minW || 1,
+                    initialItem.minW || 4,
                     Math.min(initialItem.w + deltaCols, GRID_CONFIG.COLUMNS - initialItem.x)
                 );
                 const newH = Math.max(
-                    initialItem.minH || 1,
+                    initialItem.minH || 4,
                     Math.min(initialItem.h + deltaRows, GRID_CONFIG.MAX_ROW_SPAN)
                 );
                 const proposed = { ...initialItem, w: newW, h: newH };
