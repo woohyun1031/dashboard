@@ -7,7 +7,7 @@ interface GridItemProps {
     isInteracting: boolean;
     previewState?: { type: 'drag' | 'resize' } | null;
     onPointerDown: (e: React.PointerEvent<HTMLDivElement>, type: 'drag' | 'resize') => void;
-    onToggleRowSpan: () => void;
+    onToggleColSpan: () => void;
     onRemove: () => void;
 }
 
@@ -16,7 +16,7 @@ export const GridItem: React.FC<GridItemProps> = ({
     isInteracting,
     previewState,
     onPointerDown,
-    onToggleRowSpan,
+    onToggleColSpan,
     onRemove,
 }) => {
     return (
@@ -46,7 +46,7 @@ export const GridItem: React.FC<GridItemProps> = ({
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                         onPointerDown={(e) => e.stopPropagation()}
-                        onClick={onToggleRowSpan}
+                        onClick={onToggleColSpan}
                         className="p-1 hover:bg-white/10 rounded-md text-[#888] hover:text-white transition-colors"
                     >
                         <Maximize2 size={14} />

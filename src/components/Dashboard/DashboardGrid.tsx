@@ -78,15 +78,41 @@ export const DashboardGrid = () => {
         setItems((prev) => prev.filter((item) => item.id !== id));
     };
 
-    const toggleRowSpan = (id: string) => {
+    const toggleColSpan = (id: string) => {
         setItems((prev) => {
             const target = prev.find((i) => i.id === id);
             if (!target) return prev;
 
-            const minH = target.minH || 4;
-            const nextH = target.h > minH ? minH : minH + 4;
-            const proposed = { ...target, h: Math.min(nextH, GRID_CONFIG.MAX_ROW_SPAN) };
+            let minX = 0;
+            let maxX: number = GRID_CONFIG.COLUMNS;
 
+            // 대상 아이템과 세로(y축)로 겹치는 다른 아이템들을 탐색하여 좌우 한계를 파악
+            prev.forEach((other) => {
+                if (other.id === id) return;
+
+                const isYIntersecting = !(
+                    target.y >= other.y + other.h || target.y + target.h <= other.y
+                );
+
+                if (isYIntersecting) {
+                    if (other.x + other.w <= target.x) {
+                        // 타겟보다 왼쪽에 있는 아이템 중 가장 우측 끝값
+                        minX = Math.max(minX, other.x + other.w);
+                    } else if (other.x >= target.x + target.w) {
+                        // 타겟보다 오른쪽에 있는 아이템 중 가장 좌측 끝값
+                        maxX = Math.min(maxX, other.x);
+                    }
+                }
+            });
+
+            const newW = maxX - minX;
+
+            // 이미 최대 공간을 차지하고 있다면 무시 (축소 안함)
+            if (target.x === minX && target.w === newW) {
+                return prev;
+            }
+
+            const proposed = { ...target, x: minX, w: newW };
             const squeezed = calculateSqueezedLayout(prev, id, proposed);
             return squeezed || prev;
         });
@@ -288,7 +314,7 @@ export const DashboardGrid = () => {
                                         : null
                                 }
                                 onPointerDown={(e, type) => handlePointerDown(e, item, type)}
-                                onToggleRowSpan={() => toggleRowSpan(item.id)}
+                                onToggleColSpan={() => toggleColSpan(item.id)}
                                 onRemove={() => handleRemoveItem(item.id)}
                             />
                         ))}
